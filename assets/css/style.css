@@ -1,7 +1,8 @@
 div
 {
 	border: 2px solid grey;
-	min-height: 100px;
+	margin: 0px;
+	min-height: 150px;
 }
 
 .whole
@@ -11,7 +12,7 @@ div
 
 #main
 {
-	width: 640px;
+	width: 900px;
 	border: 2px solid red;
 }
 
