@@ -1,0 +1,22 @@
+div
+{
+	border: 2px solid grey;
+	min-height: 100px;
+}
+
+.whole
+{
+	width: 100%;
+}
+
+#main
+{
+	width: 640px;
+	border: 2px solid red;
+}
+
+#banner
+{
+	border: 1px solid green;
+	min-height: 100px;
+}
