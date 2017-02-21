@@ -1,124 +1,171 @@
+		// <div id="char1" class="char"></div>
+		// <div id="char2" class="char"></div>
+		// <div id="char3" class="char"></div>
+		// <div id="char4" class="char"></div>
 var player = "";
-var challenger = "";
-var vanquished = 0;
+var opponent = "";
+var enemies = [];
 var characters = {
-	picard: {
+	Picard: {
 		hp: 0, // hit-points
+		ba: 6, // base attack-power
 		ap: 0, // attack-points
 		ca: 0, // counter-attack
-		vm: 10, // vulnerability multiplier
-		vul: "Force to interact with a child!",
-		status: "",
-		img: "assets/images/picard.jpg"
+		img: "assets/images/picard.png"
 	},
-	Q: {
-		hp: 100000,
-		ap: 0,
-		ca: 100000,
-		vm: 100000,
-		vul: "Ignore!",
-		status: "",
-		img: "assets/images/picard.jpg"
-	},
-	borg: {
+	Borg: {
 		hp: 0,
+		ba: 6, // base attack-power
 		ap: 0,
 		ca: 0,
-		vm: 10,
-		vul: "Cycle phase variance!",
-		status: "",
-		bg: 
-		img: "assets/images/picard.jpg"
-	},
-	Lore: {
-		hp: 0,
-		ap: 0,
-		ca: 0,
-		vm: 10,
-		vul: "Overload with emotion!",
-		status: "",
-		img: "assets/images/picard.jpg"
+		img: "assets/images/borg.png"
 	},
 	Klingon: {
 		hp: 0,
+		ba: 6, // base attack-power
 		ap: 0,
 		ca: 0,
-		vm: 10,
-		vul: "Insult honor!",
-		status: "",
-		img: "assets/images/picard.jpg"
+		img: "assets/images/klingon.png"
 	},
 	Romulan: {
 		hp: 0,
+		ba: 6, // base attack-power
 		ap: 0,
 		ca: 0,
-		vm: 10,
-		vul: "Compare to a Vulcan",
-		status: "",
-		img: "assets/images/picard.jpg"
-	}
-
-}
-
-$(".character").draggable();
-// $("#droppable").droppable({
-//  	drop: function(event, ui) {
-// 		$(this)
-// 			.addClass("ui-state-highlight")
-// 			.find("p")
-// 			.html("Dropped!");
-// 	}
-// });
-
-function characterStats() {
-	// This function generates stats for the active players
-
-}
-
-function randomCharacterAvailability() {
-	// This function chooses which characters are available to play
-}
-
-function changeCharacterStat(character, stat, newVal){
-	// This function just changes the obj's attribute
-	checkGameConditions()
-	return newStat;
-} 
-
-function checkGameConditions() {
-	// this function checks to see if the challenger has been defeated, if the
-	// player has been defeated, and if the game has been won/lost
-
-}
-
-function displayStatInfoBox() {
-	// this function shows the character's vital stats on hover
-}
-
-function attack(type) {
-
-}
-
-
-
-function putCharacterInDiv(char, pos) {
-	if (pos === "player") {
-		$("#sprite-left").prepend('<div class="character img-responsive"><img src="' + characters[char]["img"] + '" class="img" /></div>');
-	} else if (pos === "opponent") {
-		$("#bench").prepend('<div class="character img-responsive"><img src="' + characters[char]["img"] + '" class="img" /></div>');
-		$("#bg").css('background-image', characters[char]["bg"]).fadein(slow);
-	} else if (pos === "bench-1") {
-		$("#bench-1").prepend('<div class="character img-responsive"><img src="' + characters[char]["img"] + '" class="img" /></div>');
-	} else if (pos === "bench-2") {
-		$("#bench-2").prepend('<div class="character img-responsive"><img src="' + characters[char]["img"] + '" class="img" /></div>');
-	}  else if (pos === "bench-3") {
-		$("#bench-3").prepend('<div class="character img-responsive"><img src="' + characters[char]["img"] + '" class="img" /></div>');
-	}  else if (pos === "bench-4") {
-		$("#bench-4").prepend('<div class="character img-responsive"><img src="' + characters[char]["img"] + '" class="img" /></div>');
-	} else {
-		console.log("unexpected value");
+		img: "assets/images/romulan.png"
 	}
 }
 
+function initialize(){
+	// make the p tags and populate them
+	$("#page-title").append("<h1>STAR TREK RPG!</h1>")
+		.attr({class: "right"});
+	$("#your-character-title").append('<p class="title-text">Your Character:</p>');
+	$("#enemies-title").append('<p class="title-text">Enemies Available To Attack:</p>');
+	$("#fight-title").append('<p class="title-text">Fight Section:</p>');
+	$("#defender-title").append('<p class="title-text">Defender:</p>');
+	$("#unassigned-characters-title").append(
+		'<p class="title-text">Pick a character to play as:</p>'
+		);
 
-putCharacterInDiv("picard", "bench-1");
+	// make the character cards and stick them in the staging area
+	for (key in characters) {
+		for (subkey in characters[key]) {
+			if (subkey === "hp") {
+				characters[key][subkey] = rollDice(100, 200);
+			} else if (subkey === "ba") {
+				var value = rollDice(2, 10);
+				characters[key][subkey] = value;
+				characters[key]["ap"] = value;
+			} else if (subkey === "ca") {
+				characters[key][subkey] = rollDice(5, 25);
+			}
+		};
+		$("#unassigned-characters").append('\
+			<div id="' + key + '" class="character">\
+			<p id="' + key + '-name" class="box-text">' + key + '</p>\
+			<img src="' + characters[key]["img"] + '" class="avatar" />\
+			<p id="' + key + '-hp" class="box-text">' + 
+			characters[key]["hp"] + '</p>\
+			</div>')
+	};
+};
+
+function rollDice(low, high) {
+	return Math.floor(Math.random() * (high - low + 1)) + low;
+};
+
+function selectDefender() {
+	$(".enemy").on("click", function() {
+		opponent = $(this).attr('id');
+		$("#"+opponent).remove();
+		$("#defender").append('\
+			<div id="' + opponent + '" class="character defender">\
+			<p id="' + opponent + '-name" class="box-text">' + opponent + '</p>\
+			<img src="' + characters[opponent]["img"] + '" class="avatar" />\
+			<p id="' + opponent + '-hp" class="box-text">' + 
+			characters[opponent]["hp"] + '</p>\
+			</div>');
+	});
+};
+
+function playerPositions() {
+	$(".character").on("click", function(){
+		player = $(this).attr('id');
+		$("#unassigned-characters-title").hide();
+		$("#unassigned-characters").html("");
+		for (key in characters) {
+			if (key !== player) {
+				enemies.push(key);
+				$("#enemies").append('\
+					<div id="' + key + '" class="character enemy">\
+					<p id="' + key + '-name" class="box-text">' + key + '</p>\
+					<img src="' + characters[key]["img"] + '" class="avatar" />\
+					<p id="' + key + '-hp" class="box-text">' + 
+					characters[key]["hp"] + '</p>\
+					</div>');
+			} else {
+				$("#your-character").append('\
+					<div id="' + key + '" class="character">\
+					<p id="' + key + '-name" class="box-text">' + key + '</p>\
+					<img src="' + characters[key]["img"] + '" class="avatar" />\
+					<p id="' + key + '-hp" class="box-text">' + 
+					characters[key]["hp"] + '</p>\
+					</div>');
+			};
+		};
+		selectDefender();
+	});
+};
+
+$(document).ready(function(){
+	initialize();
+	playerPositions();
+	//checkStatus();
+
+	// buttons function - Attack
+	$("#attack").click(function(){
+		$("#status-area").html("");
+		if (opponent === "") {
+			$("#status-area").append('<p class="status">\
+				There is no one here to attack</p>');
+		} else {
+			characters[opponent]["hp"] -= characters[player]["ap"];
+			$("#"+opponent+"-hp").html(characters[opponent]["hp"]);
+			$("#status-area").append('<p class="status">You have attacked '
+				+ opponent + ' for ' + characters[player]["ap"] + 
+				' damage.</p>');
+			//characters[player]["ap"] += characters[player]["ba"];
+			if (characters[opponent]["hp"] > 0){
+				characters[player]["hp"] -= characters[opponent]["ca"];
+				$("#"+player+"-hp").html(characters[player]["hp"]);
+				$("#status-area").append('<p class="status">\
+					You have received ' + characters[opponent]["ca"] + 
+					' damage as retaliation.</p>');
+				if (characters[player]["hp"] <= 0) {
+					$("#status-area").append('<p class="status">\
+						You have lost</p>');
+					$("#status-area").append('<button id="reset" class="\
+						btn btn-danger">Try Again!</button>');
+				} else {
+					$("#opponent").hide();
+					var index = enemies.indexOf(opponent);
+					if (index > -1) {
+    					enemies.splice(index, 1);
+					};
+					$("#status-area").append('<p class="status">\
+						You have defeated ' + opponent + '.</p>');
+					opponent = "";
+					selectDefender();
+				};
+			};
+		};
+	});
+
+	// buttons function - Reset
+	$("#reset").click(function() {
+		initialize();
+		playerPositions();
+		$("#status-area").html("");
+	});
+});

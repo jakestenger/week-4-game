@@ -1,0 +1,49 @@
+html
+{
+	font-family: 'Press Start 2P', consolas, courier, sans-serif;
+	margin: 0 auto;
+}
+
+div
+{
+	border: 2px solid grey;
+	margin: 0px;
+	padding: 0px;
+	min-height: 150px;
+}
+
+#main
+{
+	position: relative;
+	width: 80%;
+	text-align: center;
+}
+
+#banner
+{
+	min-height: 100px;
+}
+
+.character
+{
+	overflow: auto;
+	width: 100%;
+}
+
+.img
+{
+	width: 100%;
+}
+
+.bench
+{
+	float: left;
+	width: 15%;
+}
+
+.bench-bumper
+{
+	float: left;
+	width: 20%;
+}
+
