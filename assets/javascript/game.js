@@ -1,41 +1,3 @@
-		// <div id="char1" class="char"></div>
-		// <div id="char2" class="char"></div>
-		// <div id="char3" class="char"></div>
-		// <div id="char4" class="char"></div>
-var player = "";
-var opponent = "";
-var enemies = [];
-var characters = {
-	Picard: {
-		hp: 0, // hit-points
-		ba: 6, // base attack-power
-		ap: 0, // attack-points
-		ca: 0, // counter-attack
-		img: "assets/images/picard.png"
-	},
-	Borg: {
-		hp: 0,
-		ba: 6, // base attack-power
-		ap: 0,
-		ca: 0,
-		img: "assets/images/borg.png"
-	},
-	Klingon: {
-		hp: 0,
-		ba: 6, // base attack-power
-		ap: 0,
-		ca: 0,
-		img: "assets/images/klingon.png"
-	},
-	Romulan: {
-		hp: 0,
-		ba: 6, // base attack-power
-		ap: 0,
-		ca: 0,
-		img: "assets/images/romulan.png"
-	}
-}
-
 function initialize(){
 	// make the p tags and populate them
 	$("#page-title").append("<h1>STAR TREK RPG!</h1>")
@@ -47,6 +9,45 @@ function initialize(){
 	$("#unassigned-characters-title").append(
 		'<p class="title-text">Pick a character to play as:</p>'
 		);
+
+	//making global variables from within a function using shortcut (not using "var" to declare them)
+	opponent = "";
+	enemies = [];
+	player = ""
+	characters = {
+		Picard: {
+			hp: 0, // hit-points
+			ba: 6, // base attack-power
+			ap: 0, // attack-points
+			ca: 0, // counter-attack
+			img: "assets/images/picard.png",
+			card: ""
+		},
+		Borg: {
+			hp: 0,
+			ba: 6, // base attack-power
+			ap: 0,
+			ca: 0,
+			img: "assets/images/borg.png",
+			card: ""
+		},
+		Klingon: {
+			hp: 0,
+			ba: 6, // base attack-power
+			ap: 0,
+			ca: 0,
+			img: "assets/images/klingon.png",
+			card: ""
+		},
+		Romulan: {
+			hp: 0,
+			ba: 6, // base attack-power
+			ap: 0,
+			ca: 0,
+			img: "assets/images/romulan.png",
+			card: ""
+		}
+	};
 
 	// make the character cards and stick them in the staging area
 	for (key in characters) {
@@ -69,6 +70,7 @@ function initialize(){
 			characters[key]["hp"] + '</p>\
 			</div>')
 	};
+	playerPositions();
 };
 
 function rollDice(low, high) {
@@ -86,6 +88,7 @@ function selectDefender() {
 			<p id="' + opponent + '-hp" class="box-text">' + 
 			characters[opponent]["hp"] + '</p>\
 			</div>');
+		$("#status-area").html('<p class="status">You\'ve selected ' + opponent + ' as your next opponent...</p>');
 	});
 };
 
@@ -114,58 +117,76 @@ function playerPositions() {
 					</div>');
 			};
 		};
+		$("#status-area").html("");
 		selectDefender();
+		return;
 	});
 };
 
-$(document).ready(function(){
-	initialize();
-	playerPositions();
-	//checkStatus();
-
-	// buttons function - Attack
-	$("#attack").click(function(){
-		$("#status-area").html("");
-		if (opponent === "") {
+// buttons function - Attack
+$("#attack").click(function(){
+	$("#status-area").html("");
+	if (opponent === "") {
+		if (enemies.length === 0) {
+			if ((player !== "") && (characters[player]["hp"] > 0)) {
+				$("#status-area").append('<p class="status">HEY! They\'re all dead! Calm down now.</p>');
+				$("#status-area").append('<br><button id="reset" class="\
+					btn btn-danger">I won!</button>');
+			} else if (player === "") {
+				$("#status-area").append('<p class="status">C\'mon! are you even trying? You have to pick a character first.</p>');
+			};
+		} else {
 			$("#status-area").append('<p class="status">\
 				There is no one here to attack</p>');
-		} else {
-			characters[opponent]["hp"] -= characters[player]["ap"];
-			$("#"+opponent+"-hp").html(characters[opponent]["hp"]);
-			$("#status-area").append('<p class="status">You have attacked '
-				+ opponent + ' for ' + characters[player]["ap"] + 
-				' damage.</p>');
-			//characters[player]["ap"] += characters[player]["ba"];
-			if (characters[opponent]["hp"] > 0){
-				characters[player]["hp"] -= characters[opponent]["ca"];
-				$("#"+player+"-hp").html(characters[player]["hp"]);
-				$("#status-area").append('<p class="status">\
-					You have received ' + characters[opponent]["ca"] + 
-					' damage as retaliation.</p>');
-				if (characters[player]["hp"] <= 0) {
-					$("#status-area").append('<p class="status">\
-						You have lost</p>');
-					$("#status-area").append('<button id="reset" class="\
-						btn btn-danger">Try Again!</button>');
-				} else {
-					$("#opponent").hide();
-					var index = enemies.indexOf(opponent);
-					if (index > -1) {
-    					enemies.splice(index, 1);
-					};
-					$("#status-area").append('<p class="status">\
-						You have defeated ' + opponent + '.</p>');
-					opponent = "";
-					selectDefender();
-				};
-			};
 		};
-	});
+	} else {
+		characters[opponent]["hp"] -= characters[player]["ap"];
+		$("#"+opponent+"-hp").html(characters[opponent]["hp"]);
+		$("#status-area").append('<p class="status">You have attacked '
+			+ opponent + ' for ' + characters[player]["ap"] + 
+			' damage.</p>');
+		characters[player]["ap"] += characters[player]["ba"];
+		if (characters[opponent]["hp"] > 0){
+			characters[player]["hp"] -= characters[opponent]["ca"];
+			$("#"+player+"-hp").html(characters[player]["hp"]);
+			$("#status-area").append('<p class="status">\
+				You have received ' + characters[opponent]["ca"] + 
+				' damage as retaliation.</p>');
+			if (characters[player]["hp"] <= 0) {
+				$("#status-area").append('<p class="status">\
+					You have lost</p>');
+				$("#status-area").append('<br><button id="reset" class="\
+					btn btn-danger">Try Again!</button>');
+			};
+		} else {
+			console.log("you have defeated " + opponent);
+			$("#" + opponent).hide();
+			var index = enemies.indexOf(opponent);
+			if (index > -1) {
+				enemies.splice(index, 1);
+			};
+			$("#status-area").append('<p class="status">You have defeated ' + opponent + '.</p>');
+			opponent = "";
+			if (enemies.length > 0) {
+				$("#status-area").append('<p class="status">Click on a new Character to attack!.</p>');
+				selectDefender();
+			} else {
+				$("#status-area").append('<p class="status">You\'ve won.</p>');
+				$("#status-area").append('<br><button id="reset" class="\
+					btn btn-danger">I won!</button>');
+			}
+			
+		}
+	};
+});
 
-	// buttons function - Reset
-	$("#reset").click(function() {
-		initialize();
-		playerPositions();
-		$("#status-area").html("");
-	});
+$("#status-area").on("click", "#status-area.reset", function() {
+	console.log("CLICK");
+	initialize();
+	$("#status-area").html("");
+	return;
+});
+
+$(document).ready(function(){
+	initialize();
 });
