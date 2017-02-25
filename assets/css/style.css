@@ -103,3 +103,13 @@ h1
 	margin: 0 auto;
 }
 
+#status-area
+{
+	width: 70%;
+	margin-top: 40px;
+	padding: 5px;
+/*	margin-left: 0px;
+	float: right;*/
+	background-color: white;
+	border: 4px solid black;
+}
