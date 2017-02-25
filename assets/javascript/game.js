@@ -82,22 +82,29 @@ function rollDice(low, high) {
 
 // puts a character in the opponent box
 function selectOpponent() {
-	$(".enemy").on("click", function() {
-		if (opponent === "") {
-			opponent = $(this).attr('id');
-			$("#"+opponent).remove();
-			$("#defender").append('\
-				<div id="' + opponent + '" class="character defender">\
-				<p id="' + opponent + '-name" class="box-text">' + opponent + '</p>\
-				<img src="' + characters[opponent]["img"] + '" class="avatar" />\
-				<p id="' + opponent + '-hp" class="box-text">' + 
-				characters[opponent]["hp"] + '</p>\
-				</div>');
-			$("#status-area").html('<p class="status">> You\'ve selected ' + opponent + ' as your next opponent...</p>');
+	for (var i = 0; i < enemies.length; i++) {
+		if (gameState === "ready") {
+			$(".enemy").on("click", function() {
+				if (opponent === "") {
+					opponent = $(this).attr('id');
+					$("#"+opponent).remove();
+					$("#defender").append('\
+						<div id="' + opponent + '" class="character defender">\
+						<p id="' + opponent + '-name" class="box-text">' + opponent + '</p>\
+						<img src="' + characters[opponent]["img"] + '" class="avatar" />\
+						<p id="' + opponent + '-hp" class="box-text">' + 
+						characters[opponent]["hp"] + '</p>\
+						</div>');
+					$("#status-area").html('<p class="status">> You\'ve selected ' + opponent + ' as your next opponent...</p>');
+				} else {
+					//$("#status-area").html('<p class="status">> Slow down there, cowboy. Let\'s only fight one enemy at a time</p>');
+				};
+			});
 		} else {
-			$("#status-area").html('<p class="status">> Slow down there, cowboy. Let\'s only fight one enemy at a time</p>');
-		};
-	});
+			break;
+		}
+	};
+	return;
 };
 
 function playerPositions() {
@@ -136,6 +143,7 @@ $("#attack").click(function(){
 	$("#status-area").html("");
 
 	if (gameState === "ready") {
+		console.log("attack!");
 		// If attack button is pressed at the wrong time...
 		if (opponent === "") {
 			if (enemies.length === 0) {
@@ -194,8 +202,11 @@ $("#attack").click(function(){
 			};
 		}; 
 	} else if ((gameState === "won") || (gameState === "lost")) {
-		initialize();
-	};
+		console.log("won or lost!");
+		window.location.reload();
+	} else {
+		console.log("something else");
+	}
 });
 
 // initialize the game, but only after the page loads
